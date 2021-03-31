@@ -1,19 +1,24 @@
 import Head from 'next/head'
-import { blogPosts } from '../../lib/data'
+import { getAllPosts } from '../../lib/data'
+import { format, parseISO } from 'date-fns'
 
 const BlogPage = ({ title, date, content }) => {
   return (
     <div>
       <Head>
-        <title>My Blog</title>
+        <title>{title}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1>{title}</h1>
+        <div className="border-b border-gray-500 mb-4">
+          <h1 className="font-bold text-2xl">{title}</h1>
+          <span className="text-gray-600 text-sm">
+            {format(parseISO(date), 'MMMM do, uuu')}
+          </span>
+        </div>
+        <p>{content}</p>
       </main>
-      <span>{date}</span>
-      <p>{content}</p>
     </div>
   )
 }
@@ -21,8 +26,10 @@ const BlogPage = ({ title, date, content }) => {
 export default BlogPage
 
 export async function getStaticPaths() {
+  const allPosts = getAllPosts()
+
   return {
-    paths: blogPosts.map((blog) => ({
+    paths: allPosts.map((blog) => ({
       params: { slug: blog.slug },
     })),
     fallback: false,
@@ -31,7 +38,13 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
   const { params } = context
+  const allPosts = getAllPosts()
+  const { data, content } = allPosts.find((blog) => blog.slug === params.slug)
   return {
-    props: blogPosts.find((blog) => blog.slug === params.slug), // will be passed to the page component as props
+    props: {
+      ...data,
+      date: data.date.toISOString(),
+      content,
+    }, // will be passed to the page component as props
   }
 }

@@ -4,6 +4,12 @@
 
 @layer base {
   a {
-    @apply hover:text-blue-800 text-blue-600;
+    @apply hover:text-blue-400 text-blue-600;
+  }
+}
+
+@layer components {
+  .card {
+    @apply border-2 border-blue-600 hover:border-blue-800 rounded-md p-4 transition-all duration-100 ease-in-out hover:shadow-md;
   }
 }
